@@ -1,23 +1,24 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#ifndef PCVER
+#include <libcd.h>
+#endif
+
 #include "level.h"
 
 void fill_ground(Level*);
 void empty_crate_pos(Level*);
 int lvl_move_crate(Level*, int, Direction);
 
-void lvl_init(Level* level, const char* filename)
+void lvl_init(Level* level, char* filename)
 {
+    char *pdef = &level->def[0];
+#ifdef PCVER
     FILE* fp;
     char c;
 
-    char *pdef = &level->def[0];
-
     level->size = 0;
-
-    fill_ground(level);
-    empty_crate_pos(level);
 
     fp = fopen(filename, "r");
 
@@ -39,19 +40,62 @@ void lvl_init(Level* level, const char* filename)
     lvl_reset(level);
 
     fclose(fp);
+#else
+    CdlFILE filePos;
+    int     numsecs, i;
+    char    *buff;
+
+    buff = NULL;
+
+    level->size = 0;
+
+    printf("looking for %s\n", filename);
+
+    if(CdSearchFile(&filePos, filename) == NULL) {
+        printf("Error while reading level file %s\n", filename);
+    } else {
+        printf("found %s\n", filename);
+        numsecs = (filePos.size + 2047) / 2048;
+        buff = (char*)malloc(2048 * numsecs);
+        CdControl(CdlSetloc, (u_char*)&filePos.pos, 0);
+        CdRead(numsecs, (u_long*)buff, CdlModeSpeed);
+        printf("numsecs %d size %d\n", numsecs, filePos.size);
+        CdReadSync(0, 0);
+
+        printf("file size%d\n", filePos.size);
+
+        for(i = 0; i < filePos.size; i++) {
+            printf("%c", buff[i]);
+            *pdef++ = buff[i];
+
+            level->size++;
+            if (level->size > LVL_SIZE) {
+                printf("Level too large");
+            }
+        }
+        printf("\nreading level done!\n");
+
+        lvl_reset(level);
+
+        free(buff);
+    }
+#endif
 }
 
 void lvl_reset(Level* level)
 {
     char c;
     int *pcrate_pos = &level->crates_pos[0];
-    int k, l;
+    int k, l, i;
 
     level->w = 0; level->h = 0;
     level->crate_count = 0;
     k = 0; l = 0;
 
-    for (int i = 0; i < level->size; i++) {
+    fill_ground(level);
+    empty_crate_pos(level);
+
+    for (i = 0; i < level->size; i++) {
         c = level->def[i];
         printf("%x ", c);
         switch(c) {
@@ -95,14 +139,18 @@ void lvl_reset(Level* level)
 
 void fill_ground(Level* level)
 {
-    for (int i = 0; i < LVL_SIZE; i++) {
+    int i;
+
+    for (i = 0; i < LVL_SIZE; i++) {
         level->tiles[i] = GROUND_T;
     }
 }
 
 void empty_crate_pos(Level* level)
 {
-    for (int i = 0; i < MAX_CRATES; i++) {
+    int i;
+
+    for (i = 0; i < MAX_CRATES; i++) {
         level->crates_pos[i] = -1;
     }
 }
@@ -110,6 +158,7 @@ void empty_crate_pos(Level* level)
 int lvl_move_player(Level* level, Direction dir)
 {
     int prev_pos = level->player_pos;
+    int i, moved;
 
     switch (dir) {
     case DIR_UP:
@@ -126,9 +175,9 @@ int lvl_move_player(Level* level, Direction dir)
         break;
     }
 
-    for (int i = 0; i < level->crate_count; i++) {
+    for (i = 0; i < level->crate_count; i++) {
         if (level->player_pos == level->crates_pos[i]) {
-            int moved = lvl_move_crate(level, i, dir);
+            moved = lvl_move_crate(level, i, dir);
             if (!moved) level->player_pos = prev_pos;
             break;
         }
@@ -146,6 +195,7 @@ int lvl_move_player(Level* level, Direction dir)
 int lvl_move_crate(Level* level, int i, Direction dir)
 {
     int crate_pos = level->crates_pos[i];
+    int c, moved;
 
     switch (dir) {
     case DIR_UP:
@@ -168,14 +218,14 @@ int lvl_move_crate(Level* level, int i, Direction dir)
 
     if (level->tiles[crate_pos] == WALL_T) crate_pos = level->crates_pos[i];
 
-    for (int c = 0; c < level->crate_count; c++) {
+    for (c = 0; c < level->crate_count; c++) {
         if (c != i && crate_pos == level->crates_pos[c]) {
             crate_pos = level->crates_pos[i];
             break;
         }
     }
 
-    int moved = crate_pos != level->crates_pos[i];
+    moved = crate_pos != level->crates_pos[i];
 
     level->crates_pos[i] = crate_pos;
 
@@ -185,9 +235,10 @@ int lvl_move_crate(Level* level, int i, Direction dir)
 int lvl_done(Level* level)
 {
     int cleared = 0;
+    int i, c;
 
-    for (int i = 0; i < level->crate_count; i++) {
-        int c = level->crates_pos[i];
+    for (i = 0; i < level->crate_count; i++) {
+        c = level->crates_pos[i];
         if (level->tiles[c] == TARGET_T)
             cleared++;
     }

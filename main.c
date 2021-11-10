@@ -1,8 +1,13 @@
+#include <stdlib.h>
 #include <stdio.h>
 
 #include "renderer.h"
 #include "level.h"
 #include "input.h"
+
+#ifndef PCVER
+#include <libcd.h>
+#endif
 
 InputManager input_manager;
 Level lvl;
@@ -64,11 +69,14 @@ int main(int argc, char** argv)
         filename = "levels/level1.txt";
     }
 #else
-    filename = "level1.txt";
+    filename = "\\LEVEL1.TXT;1";
+    CdInit();
 #endif
-    lvl_init(&lvl, filename);
-
     rdr_init();
+
+    printf("init done !\n");
+    lvl_init(&lvl, filename);
+    printf("lvl init done !\n");
 
     mainloop();
 

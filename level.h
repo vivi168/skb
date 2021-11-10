@@ -37,7 +37,7 @@ typedef struct level_t {
     int w, h;
 } Level;
 
-void lvl_init(Level*, const char*);
+void lvl_init(Level*, char*);
 void lvl_reset(Level*);
 int lvl_move_player(Level*, Direction);
 int lvl_done(Level*);
