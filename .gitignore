@@ -2,3 +2,6 @@
 *.o
 vendor/SDL2/*
 !vendor/SDL2/.keep
+
+*.dll
+*.bmp

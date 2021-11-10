@@ -59,10 +59,9 @@ int main(int argc, char** argv)
     char* filename;
 #ifdef PCVER
     if (argc == 2) {
-        printf("%s", argv[1]);
         filename = argv[1];
     } else {
-        filename = "level1.txt";
+        filename = "levels/level1.txt";
     }
 #else
     filename = "level1.txt";
