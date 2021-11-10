@@ -1,4 +1,3 @@
-#include <SDL2/SDL.h>
 #include <stdio.h>
 
 #include "renderer.h"
@@ -9,9 +8,6 @@ InputManager input_manager;
 Level lvl;
 int steps;
 int quit;
-
-#define FPS 144
-#define TICKS_PER_FRAME (1000 / FPS)
 
 void process_input()
 {
@@ -39,13 +35,13 @@ void process_input()
 
 void mainloop()
 {
-    unsigned int frame_start, frame_time;
+    unsigned int frame_start;
 
     quit = FALSE;
     steps = 0;
 
     while (!quit) {
-        frame_start = SDL_GetTicks();
+        frame_start = rdr_getticks();
 
         iptm_poll_events();
         process_input();
@@ -54,25 +50,23 @@ void mainloop()
         if (lvl_done(&lvl))
             quit = TRUE;
 
-        frame_time = SDL_GetTicks() - frame_start;
-        if (TICKS_PER_FRAME > frame_time) {
-            SDL_Delay(TICKS_PER_FRAME - frame_time);
-        }
+        rdr_delay(frame_start);
     }
 }
 
 int main(int argc, char** argv)
 {
     char* filename;
-    printf("%d", argc);
-
+#ifdef PCVER
     if (argc == 2) {
         printf("%s", argv[1]);
         filename = argv[1];
     } else {
         filename = "level1.txt";
     }
-
+#else
+    filename = "level1.txt";
+#endif
     lvl_init(&lvl, filename);
 
     rdr_init();

@@ -6,7 +6,7 @@ SDLFLAGS=-I vendor/SDL2/x86_64-w64-mingw32/include/ -L vendor/SDL2/x86_64-w64-mi
 EXEC=sokoban
 
 $(EXEC): $(SRC) $(DEP)
-	$(CC) -o $@ $(SRC) $(CFLAGS) $(LFLAGS) $(SDLFLAGS)
+	$(CC) -o $@ $(SRC) $(CFLAGS) $(LFLAGS) $(SDLFLAGS) -D PCVER=1
 
 .PHONY: clean
 clean:

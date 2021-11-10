@@ -4,10 +4,17 @@
 #include "renderer.h"
 
 #define TILE_SIZE 48
+#define FPS 144
+#define TICKS_PER_FRAME (1000 / FPS)
 
 SDL_Window* sdl_window;
 SDL_Renderer* sdl_renderer;
 SDL_Texture* tileset;
+
+void rdr_create_window();
+void rdr_create_tileset();
+void rdr_render_level(Level*);
+void rdr_render_tile(int, int);
 
 void rdr_init()
 {
@@ -117,4 +124,19 @@ void rdr_cleanup()
     SDL_DestroyWindow(sdl_window);
 
     SDL_Quit();
+}
+
+unsigned int rdr_getticks()
+{
+    return SDL_GetTicks();
+}
+
+void rdr_delay(int frame_start)
+{
+    unsigned int frame_time;
+
+    frame_time = rdr_getticks() - frame_start;
+    if (TICKS_PER_FRAME > frame_time) {
+        SDL_Delay(TICKS_PER_FRAME - frame_time);
+    }
 }
