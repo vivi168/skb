@@ -74,9 +74,9 @@ int main(int argc, char** argv)
 #endif
     rdr_init();
 
-    printf("init done !\n");
+    printf("[INFO]: init done !\n");
     lvl_init(&lvl, filename);
-    printf("lvl init done !\n");
+    printf("[INFO]: lvl init done !\n");
 
     mainloop();
 

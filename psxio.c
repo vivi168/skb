@@ -5,7 +5,7 @@
 char* load_file(char* filename, u_long *size)
 {
     CdlFILE file;
-    int     numsecs, i;
+    int     sectors;
     char    *buff;
 
     buff = NULL;
@@ -18,14 +18,14 @@ char* load_file(char* filename, u_long *size)
     }
 
     printf("[INFO]: found %s\n", filename);
-    numsecs = (file.size + 2047) / 2048;
-    buff = (char*)malloc(2048 * numsecs);
+    sectors = (file.size + 2047) / 2048;
+    buff = (char*)malloc(2048 * sectors);
     CdControl(CdlSetloc, (u_char*)&file.pos, 0);
-    CdRead(numsecs, (u_long*)buff, CdlModeSpeed);
-    printf("[INFO]: numsecs: %d\n", numsecs);
+    CdRead(sectors, (u_long*)buff, CdlModeSpeed);
+    printf("[INFO]: sectors: %d, file size: %d\n", sectors, file.size);
     CdReadSync(0, 0);
 
-    printf("[INFO]: read sync done: %d\n", file.size);
+    printf("[INFO]: read sync done\n");
     *size = file.size;
 
     return buff;
