@@ -17,13 +17,12 @@
 #define TILE_SIZE 16
 #define OTLEN 8
 
-DISPENV disp[2];
-DRAWENV draw[2];
-int db = 0;
-
-u_long ot[2][OTLEN];
-char pribuff[2][32768];
-char *nextpri;
+typedef struct db_t {
+    DISPENV disp;
+    DRAWENV draw;
+    u_long ot[OTLEN];
+    char pribuff[32768];
+} DB;
 
 typedef struct texture_t {
     u_long mode;
@@ -34,11 +33,11 @@ typedef struct texture_t {
 } Texture;
 
 Texture texture;
+DB db[2];
+int cdb = 0;
+char *nextpri;
 
-void rdr_render_level(Level*);
-void rdr_render_tile(int, int);
 void rdr_render_sprite(RECT*, int, int);
-void rdr_load_texture();
 
 void rdr_init()
 {
@@ -47,21 +46,22 @@ void rdr_init()
     ResetGraph(0);
 
     // First buffer
-    SetDefDispEnv(&disp[0], 0, 0, SCREEN_W, SCREEN_H);
-    SetDefDrawEnv(&draw[0], 0, SCREEN_H, SCREEN_W, SCREEN_H);
+    SetDefDispEnv(&db[0].disp, 0, 0, SCREEN_W, SCREEN_H);
+    SetDefDrawEnv(&db[0].draw, 0, SCREEN_H, SCREEN_W, SCREEN_H);
+
+    db[0].draw.isbg = 1;
+    setRGB0(&db[0].draw, 63, 0, 127);
+
     // Second buffer
-    SetDefDispEnv(&disp[1], 0, SCREEN_H, SCREEN_W, SCREEN_H);
-    SetDefDrawEnv(&draw[1], 0, 0, SCREEN_W, SCREEN_H);
+    SetDefDispEnv(&db[1].disp, 0, SCREEN_H, SCREEN_W, SCREEN_H);
+    SetDefDrawEnv(&db[1].draw, 0, 0, SCREEN_W, SCREEN_H);
 
-    draw[0].isbg = 1;
-    setRGB0(&draw[0], 63, 0, 127);
+    db[1].draw.isbg = 1;
+    setRGB0(&db[1].draw, 63, 0, 127);
 
-    draw[1].isbg = 1;
-    setRGB0(&draw[1], 63, 0, 127);
+    nextpri = db[cdb].pribuff;
 
-    nextpri = pribuff[0];
-
-    rdr_load_texture();
+    rdr_create_texture();
 
     // set initial tpage
     // draw[0].tpage = getTPage(texture.mode & 0x3, 0, texture.prect.x, texture.prect.y);
@@ -69,13 +69,13 @@ void rdr_init()
     // draw[0].tpage = texture.tpage;
     // draw[1].tpage = texture.tpage;
 
-    PutDrawEnv(&draw[!db]);
+    PutDrawEnv(&db[cdb].draw);
 
     FntLoad( 960, 0 );
     FntOpen( 0, 8, 320, 224, 0, 100 );
 }
 
-void rdr_load_texture()
+void rdr_create_texture()
 {
     u_long file_size;
     int i;
@@ -122,9 +122,7 @@ void rdr_load_texture()
 
 void rdr_render(Level* level)
 {
-    // TODO
-
-    ClearOTagR(ot[db], OTLEN);
+    ClearOTagR(db[cdb].ot, OTLEN);
 
     rdr_render_level(level);
 
@@ -167,13 +165,12 @@ void rdr_render_level(Level* level)
 
     tpage = (DR_TPAGE*)nextpri;
     SetDrawTPage(tpage, 0, 1, texture.tpage);
-    addPrim(ot[db], tpage);
+    addPrim(db[cdb].ot, tpage);
     nextpri += sizeof(DR_TPAGE);
 }
 
 void rdr_render_tile(int offset, int i)
 {
-    // TODO
     RECT src;
     int src_x;
     int dst_x, dst_y;
@@ -204,7 +201,7 @@ void rdr_render_sprite(RECT *src, int x, int y)
     setRGB0(sprt, 128, 128, 128);
     sprt->clut = texture.clut;
 
-    addPrim(ot[db], sprt);
+    addPrim(db[cdb].ot, sprt);
     nextpri += sizeof(SPRT);
 }
 
@@ -224,11 +221,11 @@ void rdr_delay(int frame_start)
     DrawSync(0);
     VSync(0);
 
-    PutDispEnv(&disp[db]);
-    PutDrawEnv(&draw[db]);
+    PutDispEnv(&db[cdb].disp);
+    PutDrawEnv(&db[cdb].draw);
     SetDispMask(1);
-    DrawOTag(ot[db]+OTLEN-1);
+    DrawOTag(db[cdb].ot + (OTLEN - 1));
 
-    db = !db;
-    nextpri = pribuff[db];
+    cdb = !cdb;
+    nextpri = db[cdb].pribuff;
 }

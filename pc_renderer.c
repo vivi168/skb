@@ -12,9 +12,6 @@ SDL_Renderer* sdl_renderer;
 SDL_Texture* tileset;
 
 void rdr_create_window();
-void rdr_create_tileset();
-void rdr_render_level(Level*);
-void rdr_render_tile(int, int);
 
 void rdr_init()
 {
@@ -26,7 +23,7 @@ void rdr_init()
     }
 
     rdr_create_window();
-    rdr_create_tileset();
+    rdr_create_texture();
 }
 
 void rdr_create_window()
@@ -52,7 +49,7 @@ void rdr_create_window()
     }
 }
 
-void rdr_create_tileset()
+void rdr_create_texture()
 {
     printf("create tileset\n");
 
