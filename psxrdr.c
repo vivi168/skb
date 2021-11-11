@@ -15,7 +15,7 @@
 #define SCREEN_W 320
 #define SCREEN_H 240
 
-#define TILE_SIZE 48
+#define TILE_SIZE 16
 #define OTLEN 8
 
 DISPENV disp[2];
@@ -28,14 +28,17 @@ char *nextpri;
 
 typedef struct texture_t {
     u_long mode;
-    int u, v;
+    u_char u, v;
     RECT prect, crect;
+
+    u_short tpage, clut;
 } Texture;
 
 Texture texture;
 
 void rdr_render_level(Level*);
 void rdr_render_tile(int, int);
+void rdr_render_sprite(RECT*, int, int);
 void rdr_load_texture();
 
 void rdr_init()
@@ -62,8 +65,10 @@ void rdr_init()
     rdr_load_texture();
 
     // set initial tpage
-    draw[0].tpage = getTPage(texture.mode & 0x3, 0, texture.prect.x, texture.prect.y);
-    draw[1].tpage = getTPage(texture.mode & 0x3, 0, texture.prect.x, texture.prect.y);
+    // draw[0].tpage = getTPage(texture.mode & 0x3, 0, texture.prect.x, texture.prect.y);
+    // draw[1].tpage = getTPage(texture.mode & 0x3, 0, texture.prect.x, texture.prect.y);
+    // draw[0].tpage = texture.tpage;
+    // draw[1].tpage = texture.tpage;
 
     PutDrawEnv(&draw[!db]);
 
@@ -108,6 +113,9 @@ void rdr_load_texture()
     texture.u = (texture.prect.x % 0x40) << ( 2 - (texture.mode & 0x3));
     texture.v = (texture.prect.y & 0xff);
 
+    texture.tpage = getTPage(texture.mode & 0x3, 0, texture.prect.x, texture.prect.y);
+    texture.clut = getClut(texture.crect.x, texture.crect.y);
+
     printf("[INFO]: %d %d %d\n", texture.mode, texture.prect.x, texture.prect.y);
 
     free(buff);
@@ -126,7 +134,21 @@ void rdr_render(Level* level)
 
 void rdr_render_level(Level* level)
 {
+    DR_TPAGE *tpage;
     int i, c;
+
+    // player
+    rdr_render_tile(3, level->player_pos);
+
+    // crates
+    for (i = 0; i < MAX_CRATES; i++) {
+        c = level->crates_pos[i];
+
+        if (level->tiles[c] == TARGET_T)
+            rdr_render_tile(5, c);
+        else
+            rdr_render_tile(4, c);
+    }
 
     for (i = 0; i < LVL_SIZE; i++) {
         switch (level->tiles[i]) {
@@ -142,30 +164,47 @@ void rdr_render_level(Level* level)
         }
     }
 
-    // crates
-    for (i = 0; i < MAX_CRATES; i++) {
-        c = level->crates_pos[i];
-
-        if (level->tiles[c] == TARGET_T)
-            rdr_render_tile(5, c);
-        else
-            rdr_render_tile(4, c);
-    }
-
-    // player
-    rdr_render_tile(3, level->player_pos);
-
-    FntPrint("SOKOBAN");
+    tpage = (DR_TPAGE*)nextpri;
+    SetDrawTPage(tpage, 0, 1, texture.tpage);
+    addPrim(ot[db], tpage);
+    nextpri += sizeof(DR_TPAGE);
 }
 
 void rdr_render_tile(int offset, int i)
 {
     // TODO
+    RECT src;
+    int src_x;
+    int dst_x, dst_y;
+
+    src_x = (offset * TILE_SIZE);
+
+    src.x = texture.u + src_x;
+    src.y = texture.v;
+    src.w = TILE_SIZE;
+    src.h = TILE_SIZE;
+
+    dst_x = TILE_SIZE * (i % LVL_W);
+    dst_y = TILE_SIZE * (i / LVL_W);
+
+    rdr_render_sprite(&src, dst_x, dst_y);
+}
+
+void rdr_render_sprite(RECT *src, int x, int y)
+{
     SPRT *sprt;
-    DR_TPAGE *tpage;
 
     sprt = (SPRT*)nextpri;
     setSprt(sprt);
+
+    setXY0(sprt, x, y);
+    setWH(sprt, src->w, src->h);
+    setUV0(sprt, src->x, src->y);
+    setRGB0(sprt, 128, 128, 128);
+    sprt->clut = texture.clut;
+
+    addPrim(ot[db], sprt);
+    nextpri += sizeof(SPRT);
 }
 
 void rdr_cleanup()
