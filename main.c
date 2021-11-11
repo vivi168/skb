@@ -53,7 +53,7 @@ void mainloop()
         rdr_render(&lvl);
 
         if (lvl_done(&lvl))
-            quit = TRUE;
+            quit = TRUE; // TODO load next level
 
         rdr_delay(frame_start);
     }

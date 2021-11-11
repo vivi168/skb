@@ -6,6 +6,8 @@
 #include <libetc.h>
 #include <libgte.h>
 #include <libgpu.h>
+#include <libapi.h>
+#include "io.h"
 #endif
 
 #include "renderer.h"
@@ -24,9 +26,13 @@ u_long ot[2][OTLEN];
 char pribuff[2][32768];
 char *nextpri;
 
-int tim_mode;
-RECT tim_prect,tim_crect;
-int tim_uoffs,tim_voffs;
+typedef struct texture_t {
+    u_long mode;
+    int u, v;
+    RECT prect, crect;
+} Texture;
+
+Texture texture;
 
 void rdr_render_level(Level*);
 void rdr_render_tile(int, int);
@@ -34,7 +40,7 @@ void rdr_load_texture();
 
 void rdr_init()
 {
-    printf("init\n");
+    printf("[INFO]: init\n");
 
     ResetGraph(0);
 
@@ -53,17 +59,58 @@ void rdr_init()
 
     nextpri = pribuff[0];
 
+    rdr_load_texture();
+
+    // set initial tpage
+    draw[0].tpage = getTPage(texture.mode & 0x3, 0, texture.prect.x, texture.prect.y);
+    draw[1].tpage = getTPage(texture.mode & 0x3, 0, texture.prect.x, texture.prect.y);
+
+    PutDrawEnv(&draw[!db]);
+
     FntLoad( 960, 0 );
     FntOpen( 0, 8, 320, 224, 0, 100 );
 }
 
 void rdr_load_texture()
 {
-    TIM_IMAGE   texture_tim;
+    u_long file_size;
+    int i;
+    char *buff;
+
+    TIM_IMAGE   *image;
     u_int       *filebuff;
 
-    // TODO create psxsys.c / pc_sys.c to load file
-    // reuse to load level.
+    buff = load_file("\\SKB16.TIM;1", &file_size);
+    if (buff == NULL) {
+        printf("[ERROR]: error while loading texture\n");
+        while(1);
+    }
+
+    OpenTIM((u_long*)buff);
+    ReadTIM(image);
+
+    // upload pixel data to framebuffer
+    LoadImage(image->prect, image->paddr);
+    DrawSync(0);
+
+    // upload CLUT to framebuffer if any
+    if (image->mode & 0x8) {
+        LoadImage(image->crect, image->caddr);
+        DrawSync(0);
+    }
+
+    // copy properties
+    printf("[INFO]: %d %d %d\n", image->mode, image->prect->x, image->prect->y);
+    texture.prect = *image->prect;
+    texture.crect = *image->crect;
+    texture.mode = image->mode;
+
+    texture.u = (texture.prect.x % 0x40) << ( 2 - (texture.mode & 0x3));
+    texture.v = (texture.prect.y & 0xff);
+
+    printf("[INFO]: %d %d %d\n", texture.mode, texture.prect.x, texture.prect.y);
+
+    free(buff);
 }
 
 void rdr_render(Level* level)
@@ -75,17 +122,6 @@ void rdr_render(Level* level)
     rdr_render_level(level);
 
     FntFlush(-1);
-
-    DrawSync(0);
-    VSync(0);
-
-    PutDispEnv(&disp[db]);
-    PutDrawEnv(&draw[db]);
-    SetDispMask(1);
-    DrawOTag(ot[db]+OTLEN-1);
-
-    db = !db;
-    nextpri = pribuff[db];
 }
 
 void rdr_render_level(Level* level)
@@ -125,6 +161,11 @@ void rdr_render_level(Level* level)
 void rdr_render_tile(int offset, int i)
 {
     // TODO
+    SPRT *sprt;
+    DR_TPAGE *tpage;
+
+    sprt = (SPRT*)nextpri;
+    setSprt(sprt);
 }
 
 void rdr_cleanup()
@@ -134,6 +175,7 @@ void rdr_cleanup()
 
 unsigned int rdr_getticks()
 {
+    // TODO
     return 0;
 }
 
@@ -141,4 +183,12 @@ void rdr_delay(int frame_start)
 {
     DrawSync(0);
     VSync(0);
+
+    PutDispEnv(&disp[db]);
+    PutDrawEnv(&draw[db]);
+    SetDispMask(1);
+    DrawOTag(ot[db]+OTLEN-1);
+
+    db = !db;
+    nextpri = pribuff[db];
 }
