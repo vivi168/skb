@@ -2,6 +2,8 @@
 
 #include "input.h"
 
+InputManager input_manager;
+
 void iptm_update()
 {
     SDL_Event event;

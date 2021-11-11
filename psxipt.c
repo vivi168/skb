@@ -15,6 +15,8 @@ typedef struct _PADTYPE
 PADTYPE *pad;
 u_char padbuff[2][34];
 
+InputManager input_manager;
+
 void iptm_update()
 {
     // Parse controller input

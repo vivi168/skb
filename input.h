@@ -18,8 +18,6 @@ typedef struct input_manager_t {
     unsigned int keys_pressed, keys_held, keys_released;
 } InputManager;
 
-extern InputManager input_manager;
-
 void iptm_init();
 void iptm_update();
 void iptm_poll_events();

@@ -9,7 +9,6 @@
 #include <libcd.h>
 #endif
 
-InputManager input_manager;
 Level lvl;
 int quit;
 
