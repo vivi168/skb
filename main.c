@@ -11,7 +11,6 @@
 
 InputManager input_manager;
 Level lvl;
-int steps;
 int quit;
 
 void process_input()
@@ -21,16 +20,16 @@ void process_input()
     }
 
     if (iptm_is_pressed(KEY_UP)) {
-        if (lvl_move_player(&lvl, DIR_UP)) steps++;
+        if (lvl_move_player(&lvl, DIR_UP)) lvl.steps++;
     }
     if (iptm_is_pressed(KEY_DOWN)) {
-        if (lvl_move_player(&lvl, DIR_DOWN)) steps++;
+        if (lvl_move_player(&lvl, DIR_DOWN)) lvl.steps++;
     }
     if (iptm_is_pressed(KEY_LEFT)) {
-        if (lvl_move_player(&lvl, DIR_LEFT)) steps++;
+        if (lvl_move_player(&lvl, DIR_LEFT)) lvl.steps++;
     }
     if (iptm_is_pressed(KEY_RIGHT)) {
-        if (lvl_move_player(&lvl, DIR_RIGHT)) steps++;
+        if (lvl_move_player(&lvl, DIR_RIGHT)) lvl.steps++;
     }
 
     if (iptm_is_pressed(KEY_RESTART)) {
@@ -43,7 +42,6 @@ void mainloop()
     unsigned int frame_start;
 
     quit = FALSE;
-    steps = 0;
 
     while (!quit) {
         frame_start = rdr_getticks();

@@ -35,6 +35,7 @@ typedef struct level_t {
     int size, crate_count;
     int player_pos;
     int w, h;
+    int steps;
 } Level;
 
 void lvl_init(Level*, char*);

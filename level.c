@@ -78,6 +78,7 @@ void lvl_reset(Level* level)
 
     level->w = 0; level->h = 0;
     level->crate_count = 0;
+    level->steps = 0;
     k = 0; l = 0;
 
     fill_ground(level);
