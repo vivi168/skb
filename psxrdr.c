@@ -34,7 +34,7 @@ typedef struct texture_t {
 
 Texture texture;
 DB db[2];
-int cdb = 0;
+DB *cdb;
 char *nextpri;
 
 void rdr_render_sprite(RECT*, int, int);
@@ -59,17 +59,13 @@ void rdr_init()
     db[1].draw.isbg = 1;
     setRGB0(&db[1].draw, 63, 0, 127);
 
-    nextpri = db[cdb].pribuff;
+    cdb = &db[0];
+    nextpri = cdb->pribuff;
 
     rdr_create_texture();
 
-    // set initial tpage
-    // draw[0].tpage = getTPage(texture.mode & 0x3, 0, texture.prect.x, texture.prect.y);
-    // draw[1].tpage = getTPage(texture.mode & 0x3, 0, texture.prect.x, texture.prect.y);
-    // draw[0].tpage = texture.tpage;
-    // draw[1].tpage = texture.tpage;
-
-    PutDrawEnv(&db[cdb].draw);
+    PutDrawEnv(&cdb->draw);
+    PutDispEnv(&cdb->disp);
 
     FntLoad( 960, 0 );
     FntOpen( 0, 8, 320, 224, 0, 100 );
@@ -122,7 +118,7 @@ void rdr_create_texture()
 
 void rdr_render(Level* level)
 {
-    ClearOTagR(db[cdb].ot, OTLEN);
+    ClearOTagR(cdb->ot, OTLEN);
 
     rdr_render_level(level);
 
@@ -165,7 +161,7 @@ void rdr_render_level(Level* level)
 
     tpage = (DR_TPAGE*)nextpri;
     SetDrawTPage(tpage, 0, 1, texture.tpage);
-    addPrim(db[cdb].ot, tpage);
+    addPrim(cdb->ot, tpage);
     nextpri += sizeof(DR_TPAGE);
 }
 
@@ -201,7 +197,7 @@ void rdr_render_sprite(RECT *src, int x, int y)
     setRGB0(sprt, 128, 128, 128);
     sprt->clut = texture.clut;
 
-    addPrim(db[cdb].ot, sprt);
+    addPrim(cdb->ot, sprt);
     nextpri += sizeof(SPRT);
 }
 
@@ -221,11 +217,11 @@ void rdr_delay(int frame_start)
     DrawSync(0);
     VSync(0);
 
-    PutDispEnv(&db[cdb].disp);
-    PutDrawEnv(&db[cdb].draw);
+    PutDispEnv(&cdb->disp);
+    PutDrawEnv(&cdb->draw);
     SetDispMask(1);
-    DrawOTag(db[cdb].ot + (OTLEN - 1));
+    DrawOTag(cdb->ot + (OTLEN - 1));
 
-    cdb = !cdb;
-    nextpri = db[cdb].pribuff;
+    cdb = (cdb == &db[0]) ? &db[1] : &db[0];
+    nextpri = cdb->pribuff;
 }
