@@ -2,7 +2,8 @@
 #include <stdio.h>
 
 #ifndef PCVER
-#include <libcd.h>
+#include <sys/types.h>
+#include "io.h"
 #endif
 
 #include "level.h"
@@ -37,49 +38,39 @@ void lvl_init(Level* level, char* filename)
         }
     }
 
-    lvl_reset(level);
-
     fclose(fp);
 #else
-    CdlFILE filePos;
-    int     numsecs, i;
-    char    *buff;
-
-    buff = NULL;
+    u_long file_size;
+    int i;
+    char *buff;
 
     level->size = 0;
 
-    printf("looking for %s\n", filename);
+    buff = load_file(filename, &file_size);
 
-    if(CdSearchFile(&filePos, filename) == NULL) {
-        printf("Error while reading level file %s\n", filename);
-    } else {
-        printf("found %s\n", filename);
-        numsecs = (filePos.size + 2047) / 2048;
-        buff = (char*)malloc(2048 * numsecs);
-        CdControl(CdlSetloc, (u_char*)&filePos.pos, 0);
-        CdRead(numsecs, (u_long*)buff, CdlModeSpeed);
-        printf("numsecs %d size %d\n", numsecs, filePos.size);
-        CdReadSync(0, 0);
-
-        printf("file size%d\n", filePos.size);
-
-        for(i = 0; i < filePos.size; i++) {
-            printf("%c", buff[i]);
-            *pdef++ = buff[i];
-
-            level->size++;
-            if (level->size > LVL_SIZE) {
-                printf("Level too large");
-            }
-        }
-        printf("\nreading level done!\n");
-
-        lvl_reset(level);
-
-        free(buff);
+    if (buff == NULL) {
+        printf("[ERROR]: error while loading level file %s\n", filename);
+        while(1);
     }
+
+    printf("file size%d\n", file_size);
+
+    for(i = 0; i < file_size; i++) {
+        printf("%c", buff[i]);
+        *pdef++ = buff[i];
+
+        level->size++;
+        if (level->size > LVL_SIZE) {
+            printf("[ERROR]: Level too large\n");
+            while(1);
+        }
+    }
+    printf("\nreading level done!!\n");
+
+    free(buff);
 #endif
+
+    lvl_reset(level);
 }
 
 void lvl_reset(Level* level)
