@@ -1,8 +1,8 @@
 #ifndef LEVEL_H
 #define LEVEL_H
 
-#define LVL_W 16
-#define LVL_H 14
+#define LVL_W 20
+#define LVL_H 15
 #define LVL_SIZE (LVL_W * LVL_H)
 #define MAX_CRATES 31
 
