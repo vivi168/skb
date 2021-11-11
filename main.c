@@ -73,6 +73,7 @@ int main(int argc, char** argv)
     CdInit();
 #endif
     rdr_init();
+    iptm_init();
 
     printf("[INFO]: init done !\n");
     lvl_init(&lvl, filename);

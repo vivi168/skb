@@ -6,7 +6,6 @@
 #include <libetc.h>
 #include <libgte.h>
 #include <libgpu.h>
-#include <libapi.h>
 #include "io.h"
 #endif
 
