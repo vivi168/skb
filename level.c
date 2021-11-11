@@ -53,10 +53,7 @@ void lvl_init(Level* level, char* filename)
         while(1);
     }
 
-    printf("file size%d\n", file_size);
-
     for(i = 0; i < file_size; i++) {
-        printf("%c", buff[i]);
         *pdef++ = buff[i];
 
         level->size++;
@@ -65,7 +62,7 @@ void lvl_init(Level* level, char* filename)
             while(1);
         }
     }
-    printf("\nreading level done!!\n");
+    printf("[INFO]: reading level done!!\n");
 
     free(buff);
 #endif

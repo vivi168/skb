@@ -4,34 +4,29 @@
 
 char* load_file(char* filename, u_long *size)
 {
-    CdlFILE filePos;
+    CdlFILE file;
     int     numsecs, i;
     char    *buff;
 
     buff = NULL;
 
-    printf("looking for %s\n", filename);
+    printf("[INFO]: looking for %s\n", filename);
 
-    if(CdSearchFile(&filePos, filename) == NULL) {
+    if(CdSearchFile(&file, filename) == NULL) {
         printf("[ERROR]: File not found %s\n", filename);
         return buff;
     }
 
-    printf("found %s\n", filename);
-    numsecs = (filePos.size + 2047) / 2048;
+    printf("[INFO]: found %s\n", filename);
+    numsecs = (file.size + 2047) / 2048;
     buff = (char*)malloc(2048 * numsecs);
-    CdControl(CdlSetloc, (u_char*)&filePos.pos, 0);
+    CdControl(CdlSetloc, (u_char*)&file.pos, 0);
     CdRead(numsecs, (u_long*)buff, CdlModeSpeed);
-    printf("numsecs %d size %d\n", numsecs, filePos.size);
+    printf("[INFO]: numsecs: %d\n", numsecs);
     CdReadSync(0, 0);
 
-    printf("file size%d\n", filePos.size);
-
-    for(i = 0; i < filePos.size; i++) {
-        printf("%c", buff[i]);
-    }
-
-    *size = filePos.size;
+    printf("[INFO]: read sync done: %d\n", file.size);
+    *size = file.size;
 
     return buff;
 }
