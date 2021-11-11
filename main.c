@@ -16,19 +16,22 @@ int quit;
 void process_input()
 {
     if (iptm_quit_requested() || iptm_is_pressed(KEY_QUIT)) {
+        printf("[INFO]: quit requested\n");
+#ifdef PCVER
         quit = TRUE;
+#endif
     }
 
     if (iptm_is_pressed(KEY_UP)) {
         if (lvl_move_player(&lvl, DIR_UP)) lvl.steps++;
     }
-    if (iptm_is_pressed(KEY_DOWN)) {
+    else if (iptm_is_pressed(KEY_DOWN)) {
         if (lvl_move_player(&lvl, DIR_DOWN)) lvl.steps++;
     }
-    if (iptm_is_pressed(KEY_LEFT)) {
+    else if (iptm_is_pressed(KEY_LEFT)) {
         if (lvl_move_player(&lvl, DIR_LEFT)) lvl.steps++;
     }
-    if (iptm_is_pressed(KEY_RIGHT)) {
+    else if (iptm_is_pressed(KEY_RIGHT)) {
         if (lvl_move_player(&lvl, DIR_RIGHT)) lvl.steps++;
     }
 
@@ -51,7 +54,11 @@ void mainloop()
         rdr_render(&lvl);
 
         if (lvl_done(&lvl))
+#ifdef PCVER
             quit = TRUE; // TODO load next level
+#else
+            lvl_reset(&lvl);
+#endif
 
         rdr_delay(frame_start);
     }
