@@ -70,10 +70,10 @@ int main(int argc, char** argv)
     if (argc == 2) {
         filename = argv[1];
     } else {
-        filename = "levels/level1.txt";
+        filename = "levels/level01.txt";
     }
 #else
-    filename = "\\LEVEL1.TXT;1";
+    filename = "\\LEVEL01.TXT;1";
     CdInit();
 #endif
     rdr_init();

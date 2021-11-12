@@ -22,10 +22,10 @@
 		<!-- are optional and can be modified. -->
 		<identifiers
 			system			="PLAYSTATION"
-			application		="PLAYSTATION"
-			volume			="CDTUTORIAL"
-			volume_set		="CDTUTORIAL"
-			publisher		="ME"
+			application	="PLAYSTATION"
+			volume			="SOKOBAN"
+			volume_set	="SOKOBAN"
+			publisher		="VIVI168"
 			copyright		="COPYLEFT"
 		/>
 
@@ -47,13 +47,16 @@
 			<!-- The file element defines a file to be included into the -->
 			<!-- disc image. As you can see, the source file can be -->
 			<!-- renamed with the name attribute. -->
-			<file name="system.cnf"	type="data"	source="system.txt"/>
+			<file name="SYSTEM.CNF"	type="data"	source="system.txt"/>
 
 			<!-- For this element, the source attribute can be omitted -->
 			<!-- provided the name attribute is defined. -->
-			<file name="main.exe" type="data"/>
+			<file name="MAIN.EXE" type="data"/>
 			<file name="SKB16.TIM" type="data"/>
-			<file name="LEVEL1.TXT" type="data" source="levels/level1.txt"/>
+			<file name="LEVEL01.TXT" type="data" source="levels/level01.txt"/>
+			<file name="LEVEL02.TXT" type="data" source="levels/level02.txt"/>
+			<file name="LEVEL03.TXT" type="data" source="levels/level03.txt"/>
+			<file name="LEVEL04.TXT" type="data" source="levels/level04.txt"/>
 
 			<!-- Lastly, some dummy sectors must always be placed at the -->
 			<!-- end of the disc image. It must be a pretty large one to -->
