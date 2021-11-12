@@ -2,8 +2,6 @@
 
 def filenames(files, fmt: :pc)
   files.each do |file|
-    label = File.basename(file, '.txt')
-
     if fmt == :pc
       puts "    \"#{file}\","
     else
@@ -16,11 +14,17 @@ end
 path = File.expand_path(File.dirname(__FILE__))
 files = Dir.glob('levels/level*.txt', base: path).sort
 
-puts '#include "level.h"'
-puts 'const char *level_LUT[LEVEL_COUNT] = {'
-puts '#ifdef PCVER'
-filenames(files)
-puts '#else'
-filenames(files, fmt: :psx)
-puts '#endif'
-puts '};'
+if ARGV[0] == "LUT"
+  puts '#include "level.h"'
+  puts 'const char *level_LUT[LEVEL_COUNT] = {'
+  puts '#ifdef PCVER'
+  filenames(files)
+  puts '#else'
+  filenames(files, fmt: :psx)
+  puts '#endif'
+  puts '};'
+else
+  files.size.times do |i|
+    puts "<file name=\"LEVEL#{'%02i' % (i+1)}.TXT\" type=\"data\" source=\"levels/level#{'%02i' % (i+1)}.txt\"/>"
+  end
+end
