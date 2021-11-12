@@ -1,14 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#ifndef PCVER
 #include <sys/types.h>
 #include <libetc.h>
 #include <libgte.h>
 #include <libgpu.h>
-#include "io.h"
-#endif
 
+#include "io.h"
 #include "renderer.h"
 
 #define SCREEN_W 320
