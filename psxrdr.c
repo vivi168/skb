@@ -136,28 +136,29 @@ void rdr_render_level(Level* level)
     int i, c;
 
     // player
-    rdr_render_tile(3, level->player_pos);
+    rdr_render_tile(level, 3, level->player_pos);
 
     // crates
-    for (i = 0; i < MAX_CRATES; i++) {
+    for (i = 0; i < level->crate_count; i++) {
         c = level->crates_pos[i];
 
         if (level->tiles[c] == TARGET_T)
-            rdr_render_tile(5, c);
+            rdr_render_tile(level, 5, c);
         else
-            rdr_render_tile(4, c);
+            rdr_render_tile(level, 4, c);
     }
 
     for (i = 0; i < LVL_SIZE; i++) {
         switch (level->tiles[i]) {
+        case VOID_T: break;
         case GROUND_T:
-            rdr_render_tile(0, i);
+            rdr_render_tile(level, 0, i);
             break;
         case TARGET_T:
-            rdr_render_tile(1, i);
+            rdr_render_tile(level, 1, i);
             break;
         case WALL_T:
-            rdr_render_tile(2, i);
+            rdr_render_tile(level, 2, i);
             break;
         }
     }
@@ -168,7 +169,7 @@ void rdr_render_level(Level* level)
     nextpri += sizeof(DR_TPAGE);
 }
 
-void rdr_render_tile(int offset, int i)
+void rdr_render_tile(Level* level, int offset, int i)
 {
     RECT src;
     int src_x;
@@ -181,8 +182,8 @@ void rdr_render_tile(int offset, int i)
     src.w = TILE_SIZE;
     src.h = TILE_SIZE;
 
-    dst_x = TILE_SIZE * (i % LVL_W);
-    dst_y = TILE_SIZE * (i / LVL_W);
+    dst_x = TILE_SIZE * (i % LVL_W) + (level->hoff * TILE_SIZE);
+    dst_y = TILE_SIZE * (i / LVL_W) + (level->voff * TILE_SIZE);
 
     rdr_render_sprite(&src, dst_x, dst_y);
 }

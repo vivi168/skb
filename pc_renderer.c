@@ -78,36 +78,39 @@ void rdr_render_level(Level* level)
 {
     for (int i = 0; i < LVL_SIZE; i++) {
         switch (level->tiles[i]) {
+        case VOID_T: break;
         case GROUND_T:
-            rdr_render_tile(0, i);
+            rdr_render_tile(level, 0, i);
             break;
         case TARGET_T:
-            rdr_render_tile(1, i);
+            rdr_render_tile(level, 1, i);
             break;
         case WALL_T:
-            rdr_render_tile(2, i);
+            rdr_render_tile(level, 2, i);
             break;
         }
     }
 
     // crates
-    for (int i = 0; i < MAX_CRATES; i++) {
+    for (int i = 0; i < level->crate_count; i++) {
         int c = level->crates_pos[i];
 
         if (level->tiles[c] == TARGET_T)
-            rdr_render_tile(5, c);
+            rdr_render_tile(level, 5, c);
         else
-            rdr_render_tile(4, c);
+            rdr_render_tile(level, 4, c);
     }
 
     // player
-    rdr_render_tile(3, level->player_pos);
+    rdr_render_tile(level, 3, level->player_pos);
 }
 
-void rdr_render_tile(int offset, int i)
+void rdr_render_tile(Level* level, int offset, int i)
 {
     SDL_Rect src = { offset * TILE_SIZE, 0, TILE_SIZE, TILE_SIZE };
-    SDL_Rect dst = { TILE_SIZE * (i % LVL_W), TILE_SIZE * (i / LVL_W), TILE_SIZE, TILE_SIZE };
+    SDL_Rect dst = { TILE_SIZE * (i % LVL_W) + (level->hoff * TILE_SIZE),
+                     TILE_SIZE * (i / LVL_W) + (level->voff * TILE_SIZE),
+                     TILE_SIZE, TILE_SIZE };
 
     SDL_RenderCopy(sdl_renderer, tileset, &src, &dst);
 }

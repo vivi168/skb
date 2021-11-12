@@ -75,8 +75,10 @@ void lvl_reset(Level* level)
     char c;
     int *pcrate_pos = &level->crates_pos[0];
     int k, l, i;
+    int w, h;
+    int draw_ground = 0;
 
-    level->w = 0; level->h = 0;
+    w = 0; h = 0;
     level->crate_count = 0;
     level->steps = 0;
     k = 0; l = 0;
@@ -89,6 +91,7 @@ void lvl_reset(Level* level)
         printf("%x ", c);
         switch(c) {
         case GROUND_CHAR:
+            if (draw_ground) level->tiles[k] = GROUND_T;
             break;
         case TARGET_CHAR:
             level->tiles[k] = TARGET_T;
@@ -104,17 +107,21 @@ void lvl_reset(Level* level)
             break;
         case WALL_CHAR:
             level->tiles[k] = WALL_T;
+            draw_ground = 1;
             break;
         case CRATE_CHAR:
             *pcrate_pos++ = k;
             level->crate_count++;
+            if (draw_ground) level->tiles[k] = GROUND_T;
             break;
         case PLAYER_CHAR:
             level->player_pos = k;
+            if (draw_ground) level->tiles[k] = GROUND_T;
             break;
         case NEWLINE_CHAR:
-            if (l > level->w) level->w = l;
-            level->h++;
+            if (l > w) w = l;
+            h++;
+            draw_ground = 0;
 
             k += LVL_W - l;
             l = 0;
@@ -124,6 +131,9 @@ void lvl_reset(Level* level)
         l++;
         k++;
     }
+
+    level->hoff = (LVL_W - w) / 2;
+    level->voff = (LVL_H - h) / 2;
 }
 
 void fill_ground(Level* level)
@@ -131,7 +141,7 @@ void fill_ground(Level* level)
     int i;
 
     for (i = 0; i < LVL_SIZE; i++) {
-        level->tiles[i] = GROUND_T;
+        level->tiles[i] = VOID_T;
     }
 }
 

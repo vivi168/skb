@@ -18,7 +18,8 @@
 typedef enum tile_t {
     GROUND_T = 0,
     TARGET_T,
-    WALL_T
+    WALL_T,
+    VOID_T
 } Tile;
 
 typedef enum direction_t {
@@ -34,7 +35,7 @@ typedef struct level_t {
     int crates_pos[MAX_CRATES];
     int size, crate_count;
     int player_pos;
-    int w, h;
+    int hoff, voff;
     int steps;
 } Level;
 
