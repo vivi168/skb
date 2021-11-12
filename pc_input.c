@@ -16,44 +16,44 @@ void iptm_update()
         case SDL_KEYDOWN:
             switch(event.key.keysym.sym) {
                 case SDLK_UP:
-                    input_manager.new_keystate |= (1UL << KEY_UP);
+                    input_manager.new_keystate |= (1 << KEY_UP);
                     break;
                 case SDLK_RIGHT:
-                    input_manager.new_keystate |= (1UL << KEY_RIGHT);
+                    input_manager.new_keystate |= (1 << KEY_RIGHT);
                     break;
                 case SDLK_DOWN:
-                    input_manager.new_keystate |= (1UL << KEY_DOWN);
+                    input_manager.new_keystate |= (1 << KEY_DOWN);
                     break;
                 case SDLK_LEFT:
-                    input_manager.new_keystate |= (1UL << KEY_LEFT);
+                    input_manager.new_keystate |= (1 << KEY_LEFT);
                     break;
                 case SDLK_r:
-                    input_manager.new_keystate |= (1UL << KEY_RESTART);
+                    input_manager.new_keystate |= (1 << KEY_RESTART);
                     break;
                 case SDLK_ESCAPE:
-                    input_manager.new_keystate |= (1UL << KEY_QUIT);
+                    input_manager.new_keystate |= (1 << KEY_QUIT);
                     break;
             }
             break;
         case SDL_KEYUP:
             switch(event.key.keysym.sym) {
                 case SDLK_UP:
-                    input_manager.new_keystate &= ~(1UL << KEY_UP);
+                    input_manager.new_keystate &= ~(1 << KEY_UP);
                     break;
                 case SDLK_RIGHT:
-                    input_manager.new_keystate &= ~(1UL << KEY_RIGHT);
+                    input_manager.new_keystate &= ~(1 << KEY_RIGHT);
                     break;
                 case SDLK_DOWN:
-                    input_manager.new_keystate &= ~(1UL << KEY_DOWN);
+                    input_manager.new_keystate &= ~(1 << KEY_DOWN);
                     break;
                 case SDLK_LEFT:
-                    input_manager.new_keystate &= ~(1UL << KEY_LEFT);
+                    input_manager.new_keystate &= ~(1 << KEY_LEFT);
                     break;
                 case SDLK_r:
-                    input_manager.new_keystate &= ~(1UL << KEY_RESTART);
+                    input_manager.new_keystate &= ~(1 << KEY_RESTART);
                     break;
                 case SDLK_ESCAPE:
-                    input_manager.new_keystate &= ~(1UL << KEY_QUIT);
+                    input_manager.new_keystate &= ~(1 << KEY_QUIT);
                     break;
             }
             break;
