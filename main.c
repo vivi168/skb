@@ -9,7 +9,7 @@
 #include <libcd.h>
 #endif
 
-Level lvl;
+Level level;
 int quit;
 
 void process_input()
@@ -22,20 +22,20 @@ void process_input()
     }
 
     if (iptm_is_pressed(KEY_UP)) {
-        if (lvl_move_player(&lvl, DIR_UP)) lvl.steps++;
+        if (lvl_move_player(&level, DIR_UP)) level.steps++;
     }
     else if (iptm_is_pressed(KEY_DOWN)) {
-        if (lvl_move_player(&lvl, DIR_DOWN)) lvl.steps++;
+        if (lvl_move_player(&level, DIR_DOWN)) level.steps++;
     }
     else if (iptm_is_pressed(KEY_LEFT)) {
-        if (lvl_move_player(&lvl, DIR_LEFT)) lvl.steps++;
+        if (lvl_move_player(&level, DIR_LEFT)) level.steps++;
     }
     else if (iptm_is_pressed(KEY_RIGHT)) {
-        if (lvl_move_player(&lvl, DIR_RIGHT)) lvl.steps++;
+        if (lvl_move_player(&level, DIR_RIGHT)) level.steps++;
     }
 
     if (iptm_is_pressed(KEY_RESTART)) {
-        lvl_reset(&lvl);
+        lvl_reset(&level);
     }
 }
 
@@ -50,38 +50,26 @@ void mainloop()
 
         iptm_poll_events();
         process_input();
-        rdr_render(&lvl);
+        lvl_check_level_done(&level);
 
-        if (lvl_done(&lvl))
-#ifdef PCVER
-            quit = TRUE; // TODO load next level
-#else
-            lvl_reset(&lvl);
-#endif
-
+        rdr_render(&level);
         rdr_delay(frame_start);
     }
 }
 
 int main(int argc, char** argv)
 {
-    char* filename;
-#ifdef PCVER
-    if (argc == 2) {
-        filename = argv[1];
-    } else {
-        filename = "levels/level01.txt";
-    }
-#else
-    filename = "\\LEVELS\\LEVEL01.TXT;1";
+#ifndef PCVER
     CdInit();
 #endif
+
     rdr_init();
     iptm_init();
 
     printf("[INFO]: init done !\n");
-    lvl_init(&lvl, filename);
-    printf("[INFO]: lvl init done !\n");
+
+    lvl_init(&level, 0);
+    printf("[INFO]: level init done !\n");
 
     mainloop();
 

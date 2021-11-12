@@ -15,6 +15,8 @@
 #define PLAYER_CHAR  '@'
 #define NEWLINE_CHAR '\n'
 
+#define LEVEL_COUNT 4
+
 typedef enum tile_t {
     GROUND_T = 0,
     TARGET_T,
@@ -37,11 +39,12 @@ typedef struct level_t {
     int player_pos;
     int hoff, voff;
     int steps;
+    int index;
 } Level;
 
-void lvl_init(Level*, char*);
+void lvl_init(Level*, int);
 void lvl_reset(Level*);
 int lvl_move_player(Level*, Direction);
-int lvl_done(Level*);
+int lvl_check_level_done(Level*);
 
 #endif

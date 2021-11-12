@@ -119,7 +119,7 @@ void rdr_render(Level* level)
 
     rdr_render_level(level);
 
-    FntPrint("STEPS %d", level->steps);
+    FntPrint("LEVEL %d - STEPS %d", level->index+1, level->steps);
     FntFlush(-1);
 }
 

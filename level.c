@@ -8,16 +8,35 @@
 
 #include "level.h"
 
+static const char *level_LUT[LEVEL_COUNT] = {
+#ifdef PCVER
+    "levels/level01.txt",
+    "levels/level02.txt",
+    "levels/level03.txt",
+    "levels/level04.txt",
+#else
+    "\\LEVELS\\LEVEL01.TXT;1",
+    "\\LEVELS\\LEVEL02.TXT;1",
+    "\\LEVELS\\LEVEL03.TXT;1",
+    "\\LEVELS\\LEVEL04.TXT;1",
+#endif
+};
+
 void fill_ground(Level*);
 void empty_crate_pos(Level*);
 int lvl_move_crate(Level*, int, Direction);
+void lvl_next_level(Level*);
 
-void lvl_init(Level* level, char* filename)
+void lvl_init(Level* level, int index)
 {
+    const char *filename;
     char *pdef = &level->def[0];
 #ifdef PCVER
     FILE* fp;
     char c;
+
+    level->index = index;
+    filename = level_LUT[index];
 
     level->size = 0;
 
@@ -43,6 +62,9 @@ void lvl_init(Level* level, char* filename)
     u_long file_size;
     int i;
     char *buff;
+
+    level->index = index;
+    filename = level_LUT[index];
 
     level->size = 0;
 
@@ -231,10 +253,13 @@ int lvl_move_crate(Level* level, int i, Direction dir)
     return moved;
 }
 
-int lvl_done(Level* level)
+int lvl_check_level_done(Level* level)
 {
-    int cleared = 0;
+    int cleared;
+    int done;
     int i, c;
+
+    cleared = 0; done = 0;
 
     for (i = 0; i < level->crate_count; i++) {
         c = level->crates_pos[i];
@@ -242,5 +267,25 @@ int lvl_done(Level* level)
             cleared++;
     }
 
-    return cleared == level->crate_count;
+    if (cleared == level->crate_count) {
+        lvl_next_level(level);
+        done = 1;
+    }
+
+    return done;
+}
+
+void lvl_next_level(Level* level)
+{
+    int next_level;
+
+    next_level = level->index+1;
+
+    if (next_level >= LEVEL_COUNT) {
+        next_level = 0;
+    }
+
+    printf("[INFO]: loading next level %d\n", next_level);
+
+    lvl_init(level, next_level);
 }
