@@ -53,10 +53,13 @@
       <!-- provided the name attribute is defined. -->
       <file name="MAIN.EXE" type="data"/>
       <file name="SKB16.TIM" type="data"/>
-      <file name="LEVEL01.TXT" type="data" source="levels/level01.txt"/>
-      <file name="LEVEL02.TXT" type="data" source="levels/level02.txt"/>
-      <file name="LEVEL03.TXT" type="data" source="levels/level03.txt"/>
-      <file name="LEVEL04.TXT" type="data" source="levels/level04.txt"/>
+
+      <dir name = "LEVELS">
+        <file name="LEVEL01.TXT" type="data" source="levels/level01.txt"/>
+        <file name="LEVEL02.TXT" type="data" source="levels/level02.txt"/>
+        <file name="LEVEL03.TXT" type="data" source="levels/level03.txt"/>
+        <file name="LEVEL04.TXT" type="data" source="levels/level04.txt"/>
+      </dir>
 
       <!-- Lastly, some dummy sectors must always be placed at the -->
       <!-- end of the disc image. It must be a pretty large one to -->

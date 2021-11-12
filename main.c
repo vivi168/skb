@@ -73,7 +73,7 @@ int main(int argc, char** argv)
         filename = "levels/level01.txt";
     }
 #else
-    filename = "\\LEVEL01.TXT;1";
+    filename = "\\LEVELS\\LEVEL01.TXT;1";
     CdInit();
 #endif
     rdr_init();
