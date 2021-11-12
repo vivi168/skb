@@ -8,20 +8,6 @@
 
 #include "level.h"
 
-static const char *level_LUT[LEVEL_COUNT] = {
-#ifdef PCVER
-    "levels/level01.txt",
-    "levels/level02.txt",
-    "levels/level03.txt",
-    "levels/level04.txt",
-#else
-    "\\LEVELS\\LEVEL01.TXT;1",
-    "\\LEVELS\\LEVEL02.TXT;1",
-    "\\LEVELS\\LEVEL03.TXT;1",
-    "\\LEVELS\\LEVEL04.TXT;1",
-#endif
-};
-
 void fill_ground(Level*);
 void empty_crate_pos(Level*);
 int lvl_move_crate(Level*, int, Direction);

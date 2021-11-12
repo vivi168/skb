@@ -15,7 +15,9 @@
 #define PLAYER_CHAR  '@'
 #define NEWLINE_CHAR '\n'
 
-#define LEVEL_COUNT 4
+#define LEVEL_COUNT 99
+
+extern const char* level_LUT[LEVEL_COUNT];
 
 typedef enum tile_t {
     GROUND_T = 0,
