@@ -62,9 +62,6 @@ void rdr_init()
 
     rdr_create_texture();
 
-    PutDrawEnv(&cdb->draw);
-    PutDispEnv(&cdb->disp);
-
     FntLoad( 960, 0 );
     FntOpen( 0, 8, 320, 224, 0, 100 );
 
@@ -123,8 +120,6 @@ void rdr_render(Level* level)
     rdr_render_level(level);
 
     FntPrint("STEPS %d", level->steps);
-
-    DrawOTag(&cdb->ot[OTLEN - 1]);
     FntFlush(-1);
 }
 
@@ -220,9 +215,11 @@ void rdr_delay(int frame_start)
     DrawSync(0);
     VSync(0);
 
-    cdb = (cdb == &db[0]) ? &db[1] : &db[0];
-
     PutDispEnv(&cdb->disp);
     PutDrawEnv(&cdb->draw);
+
+    DrawOTag(&cdb->ot[OTLEN - 1]);
+
+    cdb = (cdb == &db[0]) ? &db[1] : &db[0];
     nextpri = cdb->pribuff;
 }
