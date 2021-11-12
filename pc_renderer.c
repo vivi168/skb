@@ -83,13 +83,13 @@ void rdr_render_level(Level* level)
         switch (level->tiles[i]) {
         case VOID_T: break;
         case GROUND_T:
-            rdr_render_tile(hoff, voff, 0, i);
+            rdr_render_tile(hoff, voff, GROUND_IDX, i);
             break;
         case TARGET_T:
-            rdr_render_tile(hoff, voff, 1, i);
+            rdr_render_tile(hoff, voff, TARGET_IDX, i);
             break;
         case WALL_T:
-            rdr_render_tile(hoff, voff, 2, i);
+            rdr_render_tile(hoff, voff, WALL_IDX, i);
             break;
         }
     }
@@ -99,18 +99,18 @@ void rdr_render_level(Level* level)
         int c = level->crates_pos[i];
 
         if (level->tiles[c] == TARGET_T)
-            rdr_render_tile(hoff, voff, 5, c);
+            rdr_render_tile(hoff, voff, CRATET_IDX, c);
         else
-            rdr_render_tile(hoff, voff, 4, c);
+            rdr_render_tile(hoff, voff, CRATEG_IDX, c);
     }
 
     // player
-    rdr_render_tile(hoff, voff, 3, level->player_pos);
+    rdr_render_tile(hoff, voff, PLAYER_IDX, level->player_pos);
 }
 
-void rdr_render_tile(int hoff, int voff, int offset, int i)
+void rdr_render_tile(int hoff, int voff, int tile_index, int i)
 {
-    SDL_Rect src = { offset * TILE_SIZE, 0, TILE_SIZE, TILE_SIZE };
+    SDL_Rect src = { tile_index * TILE_SIZE, 0, TILE_SIZE, TILE_SIZE };
     SDL_Rect dst = { TILE_SIZE * (i % LVL_W) + hoff,
                      TILE_SIZE * (i / LVL_W) + voff,
                      TILE_SIZE, TILE_SIZE };

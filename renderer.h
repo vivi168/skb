@@ -3,6 +3,14 @@
 
 #include "level.h"
 
+// tiles indices in spritesheet
+#define GROUND_IDX 0
+#define TARGET_IDX 1
+#define WALL_IDX 2
+#define PLAYER_IDX 3
+#define CRATEG_IDX 4
+#define CRATET_IDX 5
+
 void rdr_init();
 void rdr_create_texture();
 void rdr_render(Level*);
