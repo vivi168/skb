@@ -2,7 +2,7 @@
 
 Multiplatform SokoBan game
 
-## Compile for linx
+## Compile for linux
 
 ```
 Make
