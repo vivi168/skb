@@ -110,7 +110,7 @@ void rdr_create_texture()
 
     printf("[INFO]: %d %d %d\n", texture.mode, texture.prect.x, texture.prect.y);
 
-    free(buff);
+    free3(buff);
 }
 
 void rdr_render(Level* level)

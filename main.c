@@ -7,6 +7,9 @@
 
 #ifndef PCVER
 #include <libcd.h>
+#define HEAP_SIZE (1024 * 1024)
+
+char heap[HEAP_SIZE];
 #endif
 
 Level level;
@@ -60,6 +63,7 @@ void mainloop()
 int main(int argc, char** argv)
 {
 #ifndef PCVER
+    InitHeap3((void*)&heap, HEAP_SIZE);
     CdInit();
 #endif
 

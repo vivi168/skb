@@ -19,7 +19,7 @@ char* load_file(char* filename, u_long *size)
 
     printf("[INFO]: found %s\n", filename);
     sectors = (file.size + 2047) / 2048;
-    buff = (char*)malloc(2048 * sectors);
+    buff = (char*)malloc3(2048 * sectors);
     CdControl(CdlSetloc, (u_char*)&file.pos, 0);
     CdRead(sectors, (u_long*)buff, CdlModeSpeed);
     printf("[INFO]: sectors: %d, file size: %d\n", sectors, file.size);

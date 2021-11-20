@@ -72,7 +72,7 @@ void lvl_init(Level* level, int index)
     }
     printf("[INFO]: reading level done!!\n");
 
-    free(buff);
+    free3(buff);
 #endif
 
     lvl_reset(level);
