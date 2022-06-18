@@ -5,13 +5,13 @@ Multiplatform SokoBan game
 ## Compile for linux
 
 ```
-Make
+make
 ```
 
 ## Compile for windows
 
 ```
-WIN=1 Make
+WIN=1 make
 ```
 
 ## Compile for PSX
